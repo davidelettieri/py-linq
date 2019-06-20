@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>58c23502-9405-4a2f-a591-88b87d025d3b</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>py_linq.py</StartupFile>
+    <StartupFile>py_linq_test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="py_linq_test.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="py_linq.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
