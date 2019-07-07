@@ -101,6 +101,15 @@ class Test_py_linq_test(unittest.TestCase):
         self.assertEqual(len(a_source),5)
         self.assertEqual(len(b_source),5)
 
+    def test_group_by(self):
+        start = Enumerable([1,2,3,4,5,6,7,8,9,10]).GroupBy(lambda x: x % 2)
+
+        source = [i for i in start]
+
+        self.assertEqual(len(source),2)
+
+        self.assertEqual(len(a),2)
+
 
 if __name__ == '__main__':
     unittest.main()

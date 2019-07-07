@@ -26,6 +26,9 @@ class Enumerable:
     def SkipWhile(self, predicate):
         return _SkipWhileIterable(self, predicate)
 
+    def GroupBy(self, key_selector):
+        pass
+
 class _WhereEnumerableIterable(Enumerable):
     def __init__(self, data, predicate):
         self._data = data
