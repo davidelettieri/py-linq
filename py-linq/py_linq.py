@@ -27,7 +27,7 @@ class Enumerable:
         return _SkipWhileIterable(self, predicate)
 
     def GroupBy(self, key_selector):
-        pass
+        return _GroupByIterable(self, key_selector,lambda x:x, lambda x:x)
 
 class _WhereEnumerableIterable(Enumerable):
     def __init__(self, data, predicate):
@@ -129,6 +129,98 @@ class _SkipWhileIterable(Enumerable):
             else:
                 skip = False
                 yield x
+
+class _GroupByIterable(Enumerable):
+    def __iter__(self):
+        lookup = _Lookup.Create(self._data, self._key_selector,self._element_selector, self._result_selector)
+
+        for x in lookup:
+            yield x
+    def __init__(self, data, key_selector, element_selector, result_selector):
+        self._data = data
+        self._key_selector = key_selector
+        self._element_selector = element_selector
+        self._result_selector = result_selector
+
+
+
+
+class _Lookup(Enumerable):
+    def __init__(self):
+        self.groupings = []
+        self.lastGrouping = None
+        self.count = 0
+
+    @staticmethod
+    def Create(source, key_selector, element_selector, comparer):
+        lookup = _Lookup()
+
+        for el in source:
+            lookup.GetGrouping(key_selector(el),True).Add(element_selector(el))
+
+
+    def GetGrouping(self, item,create):
+        hash_code = hash(item)
+
+        if self.groupings:
+            g = self.groupings[hash_code % self.count]
+
+            while g is not None:
+                if g.hashCode == hash_code and g.key == item:
+                    return g
+
+                g = g.hashNext()
+
+        if create:
+            index = hash_code % len(self.groupings)
+            g = _Grouping()
+            g.key = item
+            g.hashCode = hashCode
+            g.hashNext = self.groupings[index]
+            self.groupings[index] = g
+
+            if self.lastGrouping is None:
+                g.next = g
+            else:
+                g.next = self.lastGrouping.next
+                self.lastGrouping.next = g
+
+            self.lastGrouping = g
+            return g
+
+        return None
+
+    def __iter__(self):
+        g = self.lastGrouping
+
+        if g is not None:
+            g = g.next
+            first = True
+            while first or g != self.lastGrouping:
+                first = False
+                yield g
+
+class _Grouping(Enumerable):
+    def __init__(self):
+        self.key = None
+        self.hashCode = None
+        self.elements = [None] * 7
+        self.count = 7
+        self.hashNext = None
+        self.next = None
+
+
+    def Add(self,element):
+        self.elements.append(element)
+        count += 1
+
+    def __iter__(self):
+        for i in self.elements:
+            yield i
+
+    def __getitem__(self, idx):
+        return self._data[idx]
+
 
 def _combine_predicates(predicate1, predicate2):
     return lambda x : predicate1(x) and predicate2(x)
